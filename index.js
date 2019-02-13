@@ -16,7 +16,13 @@ function findOngoingEvent(events) {
             // ignore all-day events
             return false;
         }
-        
+
+        var self = e.attendees && e.attendees.find(attendee => attendee.self);
+        if (self && self.responseStatus === 'declined') {
+            // ignore events where I responded as 'no'
+            return false;
+        }
+
         return start < now && end > now;
     });
 

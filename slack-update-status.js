@@ -5,7 +5,7 @@ function getSecrets() {
     return JSON.parse(fs.readFileSync("slack_secret.json"));
 }
 
-function updateStatus(text, emoji) {
+function updateStatus(text, emoji, presence) {
     const secrets = getSecrets();
     const web = new WebClient(secrets.token);
     
@@ -16,6 +16,13 @@ function updateStatus(text, emoji) {
             "status_emoji": emoji
         }
     };
+
+    
+    /*web.users.list(function(err, res) {
+        res.members.forEach(m => console.log(m.id, m.real_name))
+    });*/ 
+
+    web.users.setPresence(presence);
 
     return new Promise((resolve, reject) => {
         web.users.profile.set(profileData, function(err, info) {
@@ -29,11 +36,11 @@ function updateStatus(text, emoji) {
 }
 
 function updateMeeting(title) {
-    return updateStatus(`Meeting: ${title}`, ":calendar:");
+    return updateStatus(`In a meeting: ${title}`, ":calendar:", "away");
 }
 
 function updateAvailable() {
-    return updateStatus("Available", ":green_heart:");
+    return updateStatus("Available", ":green_heart:", "auto");
 }
 
 module.exports = {
